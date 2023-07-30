@@ -12,7 +12,7 @@ namespace Bank.Repository
             _context = context;
         }
 
-        public void CreateCoin(Coin coin)
+        public void AddCoin(Coin coin)
         {
             coin.When = DateTime.Now;
             coin.Deleted = false;

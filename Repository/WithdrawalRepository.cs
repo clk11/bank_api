@@ -11,11 +11,16 @@ namespace Bank.Repository
         {
             _context = context;
         }
-        public List<Withdrawal> GetWithdrawalByOperationTypeId(int id) =>
-                                _context.Operations
-                                        .Include(w => w.Withdrawal)
-                                        .Where(x => x.OperationTypeId == id)
-                                        .Select(w => w.Withdrawal)
-                                        .ToList();
+
+        public List<Withdrawal> GetWithdrawalByOperationTypeId(int id)
+        {
+            throw new NotImplementedException();
+        }
+        //public List<Withdrawal> GetWithdrawalByOperationTypeId(int id) =>
+        //                        _context.Operations
+        //                                .Include(w => w.Withdrawal)
+        //                                .Where(x => x.OperationTypeId == id)
+        //                                .Select(w => w.Withdrawal)
+        //                                .ToList();
     }
 }

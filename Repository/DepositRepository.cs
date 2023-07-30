@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Bank.Entities;
+﻿using Bank.Entities;
 using Bank.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 
 namespace Bank.Repository
 {
@@ -12,10 +14,32 @@ namespace Bank.Repository
             _context = context;
         }
 
-        public List<Deposit> GetDepositByOperationTypeId(int id) => _context.Operations
-                                                                            .Include(dep=>dep.Deposit)
-                                                                            .Where(x=>x.OperationTypeId == id)
-                                                                            .Select(dep=>dep.Deposit)
-                                                                            .ToList();
+        public void AddDeposit(Deposit deposit)
+        {
+            _context.Add(deposit);
+            _context.SaveChanges();
+        }
+
+        public void EditDeposit(Deposit d)
+        {
+            Deposit item = _context.Deposits.FirstOrDefault(x => x.Id == d.Id);
+            item.FromAddress = d.FromAddress;
+            item.Amount = d.Amount;
+            item.CoinId = d.CoinId;
+            _context.SaveChanges();
+        }
+
+        public List<Deposit> GetAll()
+        {
+            //ThenInclude is not working
+            List<Deposit> deposits = _context.Deposits.Include(x=>x.Coin)
+            .ToList();
+            return deposits;
+        }
+
+        public Deposit GetDeposit(int id)
+        {
+            return _context.Deposits.Include(x=>x.Coin).FirstOrDefault(x => x.Id == id);
+        }
     }
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bank.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230710123521_Create coin table")]
-    partial class Createcointable
+    [Migration("20230730143725_users migration")]
+    partial class usersmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -66,57 +66,18 @@ namespace Bank.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("CoinId")
+                        .HasColumnType("int");
+
                     b.Property<string>("FromAddress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OperationId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("OperationId")
-                        .IsUnique();
+                    b.HasIndex("CoinId");
 
                     b.ToTable("Deposits");
-                });
-
-            modelBuilder.Entity("Bank.Entities.Operation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("OperationTypeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OperationTypeId");
-
-                    b.ToTable("Operations");
-                });
-
-            modelBuilder.Entity("Bank.Entities.OperationType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("OperationTypes");
                 });
 
             modelBuilder.Entity("Bank.Entities.TradeOrder", b =>
@@ -130,16 +91,10 @@ namespace Bank.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<int>("OperationId")
-                        .HasColumnType("int");
-
                     b.Property<int>("TradeOrderTypeId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OperationId")
-                        .IsUnique();
 
                     b.HasIndex("TradeOrderTypeId");
 
@@ -163,6 +118,27 @@ namespace Bank.Migrations
                     b.ToTable("TradeOrderTypes");
                 });
 
+            modelBuilder.Entity("Bank.Entities.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("Bank.Entities.Withdrawal", b =>
                 {
                     b.Property<int>("Id")
@@ -174,7 +150,7 @@ namespace Bank.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("float");
 
-                    b.Property<int>("OperationId")
+                    b.Property<int>("CoinId")
                         .HasColumnType("int");
 
                     b.Property<string>("ToAddress")
@@ -186,79 +162,42 @@ namespace Bank.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OperationId")
-                        .IsUnique();
+                    b.HasIndex("CoinId");
 
                     b.ToTable("Withdrawals");
                 });
 
             modelBuilder.Entity("Bank.Entities.Deposit", b =>
                 {
-                    b.HasOne("Bank.Entities.Operation", "Operation")
-                        .WithOne("Deposit")
-                        .HasForeignKey("Bank.Entities.Deposit", "OperationId")
+                    b.HasOne("Bank.Entities.Coin", "Coin")
+                        .WithMany()
+                        .HasForeignKey("CoinId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Operation");
-                });
-
-            modelBuilder.Entity("Bank.Entities.Operation", b =>
-                {
-                    b.HasOne("Bank.Entities.OperationType", "OperationType")
-                        .WithMany("Operations")
-                        .HasForeignKey("OperationTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("OperationType");
+                    b.Navigation("Coin");
                 });
 
             modelBuilder.Entity("Bank.Entities.TradeOrder", b =>
                 {
-                    b.HasOne("Bank.Entities.Operation", "Operation")
-                        .WithOne("TradeOrder")
-                        .HasForeignKey("Bank.Entities.TradeOrder", "OperationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Bank.Entities.TradeOrderType", "TradeOrderType")
                         .WithMany("TradeOrders")
                         .HasForeignKey("TradeOrderTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Operation");
-
                     b.Navigation("TradeOrderType");
                 });
 
             modelBuilder.Entity("Bank.Entities.Withdrawal", b =>
                 {
-                    b.HasOne("Bank.Entities.Operation", "Operation")
-                        .WithOne("Withdrawal")
-                        .HasForeignKey("Bank.Entities.Withdrawal", "OperationId")
+                    b.HasOne("Bank.Entities.Coin", "Coin")
+                        .WithMany()
+                        .HasForeignKey("CoinId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Operation");
-                });
-
-            modelBuilder.Entity("Bank.Entities.Operation", b =>
-                {
-                    b.Navigation("Deposit")
-                        .IsRequired();
-
-                    b.Navigation("TradeOrder")
-                        .IsRequired();
-
-                    b.Navigation("Withdrawal")
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Bank.Entities.OperationType", b =>
-                {
-                    b.Navigation("Operations");
+                    b.Navigation("Coin");
                 });
 
             modelBuilder.Entity("Bank.Entities.TradeOrderType", b =>

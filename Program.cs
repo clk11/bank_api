@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Bank.Entities;
 using Bank.Repository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,12 +17,21 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<DepositRepository>();
 builder.Services.AddScoped<TradeOrderRepository>();
 builder.Services.AddScoped<WithdrawalRepository>();
-builder.Services.AddScoped<OperationTypeRepository>();
 builder.Services.AddScoped<CoinRepository>();
+builder.Services.AddScoped<AuthRepository>();
 
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+//{
+//    options.TokenValidationParameters = new TokenValidationParameters
+//    {
+//        ValidateIssuerSigningKey = true,
+//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+//        ValidateIssuer = false,
+//        ValidateAudience = false
+//    };
+//});
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -34,8 +46,9 @@ app.UseCors(builder =>
             .AllowAnyMethod());
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
+//app.UseMiddleware<Auth>();
 
 app.MapControllers();
 

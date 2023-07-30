@@ -12,12 +12,17 @@ namespace Bank.Repository
             _context = context;
         }
 
-        public List<TradeOrder> GetTradeOrderByOperationTypeId(int id) => _context.Operations
-                                                                                    .Include(to => to.TradeOrder)
-                                                                                    .ThenInclude(tot => tot.TradeOrderType)
-                                                                                    .Where(x => x.OperationTypeId == id)
-                                                                                    .Select(to => to.TradeOrder)
-                                                                                    .OrderBy(x => x.Amount)
-                                                                                    .ToList();
+        public List<TradeOrder> GetTradeOrderByOperationTypeId(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        //public List<TradeOrder> GetTradeOrderByOperationTypeId(int id) => _context.Operations
+        //                                                                            .Include(to => to.TradeOrder)
+        //                                                                            .ThenInclude(tot => tot.TradeOrderType)
+        //                                                                            .Where(x => x.OperationTypeId == id)
+        //                                                                            .Select(to => to.TradeOrder)
+        //                                                                            .OrderBy(x => x.Amount)
+        //                                                                            .ToList();
     }
 }

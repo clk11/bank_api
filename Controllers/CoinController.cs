@@ -1,5 +1,6 @@
 ﻿using Bank.Entities;
 using Bank.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Reflection.Metadata.Ecma335;
@@ -8,6 +9,7 @@ namespace Bank.Controllers
 {
     [ApiController]
     [Route("[controller]/[action]")]
+    //[Authorize]
     public class CoinController : ControllerBase
     {
         private readonly CoinRepository _coinRepository;
@@ -24,7 +26,7 @@ namespace Bank.Controllers
         [HttpPost]
         public void AddCoin(Coin coin)
         {
-            _coinRepository.CreateCoin(coin);
+            _coinRepository.AddCoin(coin);
         }
         [HttpDelete]
         public void Delete(int id)
